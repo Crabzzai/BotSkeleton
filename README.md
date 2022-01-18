@@ -78,4 +78,4 @@ $ npm run start
 ```
 
 # Important!!
-If you experience any problems in your way using this awesome skelet for your bot, don't hesitate to contact me on discord! `Croixai#2003`
+If you experience any problems in your way using this awesome skeleton for your bot, don't hesitate to contact me on discord! `Croixai#2003`
