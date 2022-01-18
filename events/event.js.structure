@@ -1,0 +1,14 @@
+module.exports = (client, config) => {
+    var eventObj = {};
+
+    // Settings
+    eventObj.name = 'test'; // Event name
+    eventObj.once = false; // Set this to true if it should listen once.
+
+    // Main function
+    eventObj.execute = () => {
+        // Do something in the event here
+    }
+
+    return eventObj;
+}

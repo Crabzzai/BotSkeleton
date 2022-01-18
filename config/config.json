@@ -1,0 +1,6 @@
+{
+    "token": "CLIENT_TOKEN",
+    "prefix": "!",
+    "guild_id": "GUILD_ID",
+    "production": false
+}
