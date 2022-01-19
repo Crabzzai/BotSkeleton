@@ -1,5 +1,6 @@
 // Imports
-const Discord = require('discord.js')
+const Discord = require('discord.js');
+const hasPermission = require('./../utils/hasPermission');
 
 module.exports = (client, config) => {
     var eventObj = {};
@@ -20,8 +21,7 @@ module.exports = (client, config) => {
         const command = client.commands.get(interaction.commandName);
 
         if (!command) return;
-
-        try {
+        if (command.permissions == null || (command.permissions != null && hasPermission(interaction.member, command.permissions))) try {
             await command.execute(null, interaction.options, interaction);
         } catch (err) {
             if (err) console.error(err);

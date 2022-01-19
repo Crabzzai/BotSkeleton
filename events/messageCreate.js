@@ -15,9 +15,17 @@ module.exports = (client, config) => {
      */
     eventObj.execute = async (message) => {
         if (message.author.bot) return;
+        
         const args = message.content.slice(config.prefix.length).trim().split(/ +/);
-        const command = args.shift().toLowerCase();
-        if (client.commands.get(command) && (client.commands.get(command).permissions == null || (client.commands.get(command).permissions != null && hasPermission(message.member, client.commands.get(command).permissions)))) client.commands.get(command).execute(message, args, null);
+        const commandName = args.shift().toLowerCase();
+        const command = client.commands(commandName);
+
+        if (!command) return;
+        if (command.permissions == null || (command.permissions != null && hasPermission(message.member, command.permissions))) try {
+            await command.execute(message, args, null);
+        } catch (err) {
+            if (err) console.error(err);
+        }
     }
 
     return eventObj;
