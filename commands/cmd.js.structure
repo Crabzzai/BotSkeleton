@@ -2,7 +2,7 @@
 const Discord = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
-module.exports = (client, config) => {
+module.exports = (client, config, db) => {
     var cmdObj = {};
 
     // Settings

@@ -2,7 +2,7 @@
 const Discord = require('discord.js');
 const hasPermission = require('./../utils/hasPermission');
 
-module.exports = (client, config) => {
+module.exports = (client, config, db) => {
     var eventObj = {};
 
     // Settings

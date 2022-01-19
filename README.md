@@ -1,5 +1,5 @@
 # BotSkelet
- Skelet of a discord.js bot
+ Skelet of a discord.js bot with mongodb integration!
 
 Tired of making the whole "base" of your discord bot? Never been easier!
 
@@ -16,12 +16,54 @@ Install the project with the following command:
 $ npm install
 ```
 
+### MongoDB
+Tired of making millions of lines just to use your database connection in whole your project? 
+Now you can easily access each collection through the variable `db` in all your events, commands and if you want to use it in the root of your project (`index.js`)
+
+You don't need to do anything else than putting in your credentials in `./config/db.json`, and then you can access each collection by their name.
+Look at the example beneath:
+```js
+// Imports
+const Discord = require('discord.js');
+
+module.exports = (client, config, db) => {
+    var cmdObj = {};
+
+    // Settings
+    cmdObj.name = 'dogs';
+    cmdObj.description = 'return a number of dogs in the database';
+    cmdObj.permissions = null;
+    cmdObj.data = null; // We don't want to use a Slash Command for this example
+
+    // Main function
+    /**
+     * @param {Discord.Message} message - Will be set if the command was executed by standard message command.
+     * @param {Array<String> || Discord.CommandInteractionOptionResolver} args - If the command was executed by standard message command, it will send an array of string arguments. If executed by slash commands it will return the interaction options.
+     * @param {Discord.CommandInteraction} interaction - Will be set if command was executed by a slash command.
+     */
+    cmdObj.execute = async (message, args, interaction) => {
+        // Let's say we have a mongodb collection named "dogs", we will then access it through "db.dogs"
+        let dogs = await db.dogs.find({}).toArray();
+
+        /**
+         * This will send a message to the same channel as the command was executed in,
+         * with for example the following:
+         * 
+         * We have 101 dogs in our database!!
+        */
+        message.channel.send({content: `We have ${dogs.length} dogs in our database!!`});
+    }
+
+    return cmdObj;
+}
+```
+
 ### Events
 Get started by duplicating the template named `event.js.structure` and renaming it to a new more convenient name ending on `.js`
 
 The template include the following:
 ```js
-module.exports = (client, config) => {
+module.exports = (client, config, db) => {
     var eventObj = {};
 
     // Settings
@@ -47,7 +89,7 @@ The template include the following:
 const Discord = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
-module.exports = (client, config) => {
+module.exports = (client, config, db) => {
     var cmdObj = {};
 
     // Settings

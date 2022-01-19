@@ -9,7 +9,7 @@ const { Client } = require('discord.js');
  * @param {*} config 
  * @returns 
  */
-module.exports = (client, config) => {
+module.exports = (client, config, db) => {
     var eventObj = {};
 
     // Settings

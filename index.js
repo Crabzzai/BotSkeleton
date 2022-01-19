@@ -1,6 +1,7 @@
 // Imports
 const Discord = require('discord.js');
 const config = require('./config/config.json');
+const { db_name } = require('./config/db.json');
 
 // Discord client
 var intents = [
@@ -29,40 +30,58 @@ client.slashCommands = [];
 
 // Load utils
 const getAllFiles = require('./utils/getFileLocations');
+const db_client = require('./utils/database');
 
-// Load commands
-console.log('Loading commands..');
-var commands = getAllFiles(`${__dirname}/commands/`, '.js');
-for (const command of commands) {
-    var cmdFile = require(command)(client, config);
-    console.log(`Loading ${cmdFile.name}..`);
-    if (cmdFile.data != null) client.slashCommands.push(cmdFile.data.toJSON());
-    client.commands.set(cmdFile.name, cmdFile);
-}
-console.log(`${Array.from(client.commands.values()).length} command${Array.from(client.commands.values()).length > 1 || Array.from(client.commands.values()).length < 1 ? 's' : ''} was loaded!`);
+// Database setup
+(async () => {
+    // Connect to database
+    await db_client.connect();
+    console.log('Database connected successfully!');
 
-//Loading events
-console.log('Listening for events..');
-events = getAllFiles(`${__dirname}/events/`, '.js');
-for (const event of events) {
-    eventFile = require(event)(client, config);
-    if (eventFile.once) client.once(eventFile.name, async (...args) => {
-        try {
-            await require(event)(client, config).execute(...args);
-        } catch(err) {
-            if (err) console.log(err);
-        }
-    });
-    else client.on(eventFile.name, async (...args) => {
-        try {
-            await require(event)(client, config).execute(...args);
-        } catch(err) {
-            if (err) console.log(err);
-        }
-    });
-    console.log(`Listening on '${eventFile.name}'..`);
-}
-console.log('Listening for all events now!');
+    const database = db_client.db(db_name);
+    const collections = await database.collections();
 
-// Logging into the bot
-client.login(config.token);
+    var db = {};
+    for (const collection of collections) {
+        db[collection.collectionName] = collection;
+    }
+
+    // Load commands
+    console.log('Loading commands..');
+    var commands = getAllFiles(`${__dirname}/commands/`, '.js');
+    for (const command of commands) {
+        var cmdFile = require(command)(client, config, db);
+        console.log(`Loading ${cmdFile.name}..`);
+        if (cmdFile.data != null) client.slashCommands.push(cmdFile.data.toJSON());
+        client.commands.set(cmdFile.name, cmdFile);
+    }
+    console.log(`${Array.from(client.commands.values()).length} command${Array.from(client.commands.values()).length > 1 || Array.from(client.commands.values()).length < 1 ? 's' : ''} was loaded!`);
+
+    //Loading events
+    console.log('Listening for events..');
+    events = getAllFiles(`${__dirname}/events/`, '.js');
+    for (const event of events) {
+        eventFile = require(event)(client, config, db);
+        if (eventFile.once) client.once(eventFile.name, async (...args) => {
+            try {
+                await require(event)(client, config, db).execute(...args);
+            } catch(err) {
+                if (err) console.log(err);
+            }
+        });
+        else client.on(eventFile.name, async (...args) => {
+            try {
+                await require(event)(client, config, db).execute(...args);
+            } catch(err) {
+                if (err) console.log(err);
+            }
+        });
+        console.log(`Listening on '${eventFile.name}'..`);
+    }
+    console.log('Listening for all events now!');
+
+    // Logging into the bot
+    client.login(config.token);
+})().catch(err => {
+    if (err) console.error(err);
+});
