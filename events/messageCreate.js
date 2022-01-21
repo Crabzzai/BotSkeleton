@@ -18,7 +18,7 @@ module.exports = (client, config, db) => {
         
         const args = message.content.slice(config.prefix.length).trim().split(/ +/);
         const commandName = args.shift().toLowerCase();
-        const command = client.commands(commandName);
+        const command = client.commands.get(commandName);
 
         if (!command) return;
         if (command.permissions == null || (command.permissions != null && hasPermission(message.member, command.permissions))) try {
