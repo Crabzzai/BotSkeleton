@@ -26,6 +26,7 @@ const client = new Discord.Client({ intents: [intents], disabledEveryone: true }
 // Command collection
 client.commands = new Discord.Collection();
 client.slashCommands = [];
+client.commandCategories = {}; // Object of command categories
 
 // Load utils
 const getAllFiles = require('./utils/getFileLocations');
@@ -36,6 +37,10 @@ var commands = getAllFiles(`${__dirname}/commands/`, '.js');
 for (const command of commands) {
     var cmdFile = require(command)(client, config);
     console.log(`Loading ${cmdFile.name}..`);
+    if (Boolean(cmdFile.category) && !client.commandCategories[cmdFile.category]) client.commandCategories[cmdFile.category] = [cmdFile];
+    else if (Boolean(cmdFile.category) && client.commandCategories[cmdFile.category]) client.commandCategories[cmdFile.category] = [...client.commandCategories[cmdFile.category], cmdFile];
+    else if (!Boolean(cmdFile.category) && !client.commandCategories[config.no_category_name]) client.commandCategories[config.no_category_name] = [cmdFile];
+    else client.commandCategories[config.no_category_name] = [...client.commandCategories[config.no_category_name], cmdFile];
     if (cmdFile.data != null) client.slashCommands.push(cmdFile.data.toJSON());
     client.commands.set(cmdFile.name, cmdFile);
 }
@@ -43,7 +48,7 @@ console.log(`${Array.from(client.commands.values()).length} command${Array.from(
 
 //Loading events
 console.log('Listening for events..');
-events = getAllFiles(`${__dirname}/events/`, '.js');
+var events = getAllFiles(`${__dirname}/events/`, '.js');
 for (const event of events) {
     eventFile = require(event)(client, config);
     if (eventFile.once) client.once(eventFile.name, async (...args) => {

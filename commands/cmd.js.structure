@@ -6,8 +6,9 @@ module.exports = (client, config) => {
     var cmdObj = {};
 
     // Settings
-    cmdObj.name = 'test';
-    cmdObj.description = 'test description';
+    cmdObj.name = 'test'; // The name of the command 
+    cmdObj.description = 'test description'; // A short description of what the command do
+    cmdObj.category = 'test category'; // Which category the command belongs to
     cmdObj.permissions = null;
     cmdObj.data = new SlashCommandBuilder()
         .setName(cmdObj.name)
