@@ -2,5 +2,6 @@
     "token": "CLIENT_TOKEN",
     "prefix": "!",
     "guild_id": "GUILD_ID",
-    "production": false
+    "production": false,
+    "no_category_name": "Uncategorized"
 }

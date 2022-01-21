@@ -27,6 +27,7 @@ const client = new Discord.Client({ intents: [intents], disabledEveryone: true }
 // Command collection
 client.commands = new Discord.Collection();
 client.slashCommands = [];
+client.commandCategories = {}; // Object of command categories
 
 // Load utils
 const getAllFiles = require('./utils/getFileLocations');
@@ -52,6 +53,10 @@ const db_client = require('./utils/database');
     for (const command of commands) {
         var cmdFile = require(command)(client, config, db);
         console.log(`Loading ${cmdFile.name}..`);
+        if (Boolean(cmdFile.category) && !client.commandCategories[cmdFile.category]) client.commandCategories[cmdFile.category] = [cmdFile];
+        else if (Boolean(cmdFile.category) && client.commandCategories[cmdFile.category]) client.commandCategories[cmdFile.category] = [...client.commandCategories[cmdFile.category], cmdFile];
+        else if (!Boolean(cmdFile.category) && !client.commandCategories[config.no_category_name]) client.commandCategories[config.no_category_name] = [cmdFile];
+        else client.commandCategories[config.no_category_name] = [...client.commandCategories[config.no_category_name], cmdFile];
         if (cmdFile.data != null) client.slashCommands.push(cmdFile.data.toJSON());
         client.commands.set(cmdFile.name, cmdFile);
     }
