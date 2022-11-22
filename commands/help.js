@@ -26,6 +26,11 @@ module.exports = (client, config) => {
             .setTitle('Help Menu!')
             .setColor('#FF6700');
         
+        // Add current prefix section if prefix is set
+        if (config.prefix !== "") {
+            embed.addField('Current Prefix',`The current prefix is: \`${config.prefix}\``,false)
+        }
+        
         // Looping through the collected categories to setup the help menu
         for (const [category, cmds] of Object.entries(client.commandCategories)) {
             let cmdStr = ``;
