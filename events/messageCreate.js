@@ -15,7 +15,9 @@ module.exports = (client, config) => {
      */
     eventObj.execute = async (message) => {
         if (message.author.bot) return;
-        
+        if (!message.content.startsWith(config.prefix)) {
+            return;
+        }
         const args = message.content.slice(config.prefix.length).trim().split(/ +/);
         const commandName = args.shift().toLowerCase();
         const command = client.commands.get(commandName);
